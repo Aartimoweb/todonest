@@ -1,38 +1,20 @@
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser,deleteUser } from "./store/userslice";
-import { RootState, store } from "./store/store";
+import { addUser,deleteUser,updateUser } from "./store/userslice";
+import { LOGOUT } from "./store/authAction";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "./store/store";
 import '../src/Admin.css';
 
 const AdminPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser,setEditingUser] = useState<any | null>(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const users = useSelector((state: RootState) => state.user.users);
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [imageError, setImageError] = useState<boolean>(false);
-
-  const handleImageError = () => {
-    setImageError(true); // If image doesn't load, set error state to true
-  };
-
-  const generateInitials = (username: string, lastName: string) => {
-    const usernameInitial = username.charAt(0).toUpperCase();
-    const lastNameInitial = lastName.charAt(0).toUpperCase();
-    return `${usernameInitial}${lastNameInitial}`;
-  };
-
-  useEffect(() => {
-    if (imageUrl) {
-      const img = new Image();
-      img.src = imageUrl;
-      img.onload = () => setImageError(false); // Image loaded successfully
-      img.onerror = handleImageError; // Image failed to load
-    }
-  }, [imageUrl]);
-  
-
+ 
   const validationSchema = Yup.object({
     username: Yup.string().required("Username is required"),
     lastName: Yup.string().required("Last name is required"),
@@ -47,17 +29,32 @@ const AdminPage: React.FC = () => {
 
   const handleDeleteUser = (userId: string) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      dispatch(deleteUser(userId)); // Dispatch delete action with userId
+      dispatch(deleteUser(userId)); 
     }
   };
 
+  const handleEditUser = (user:any) => {
+    setEditingUser(user)
+    setIsModalOpen(true);
+  }
+
+  const handleLogout = () => {
+    dispatch({type:LOGOUT})
+    navigate('/')
+  }
+
   return (
     <>
+       <button onClick={handleLogout} className="btn btn-primary">Logout</button>
+       <br></br><br></br>
       <div>Welcome to the Admin Page</div>
       <br />
 
       {/* Add User Button */}
-      <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+      <button className="btn btn-primary"  onClick={() => {
+       setEditingUser(null); 
+       setIsModalOpen(true)}
+      }>
         Add User
       </button>
 
@@ -69,22 +66,22 @@ const AdminPage: React.FC = () => {
             
             <Formik
               initialValues={{
-                username: "",
-                lastName: "",
-                password: "",
-                email: "",
-                contact: "",
-                gender: "",
-                profile:"",
+                username: editingUser ? editingUser.username : "",
+                lastName: editingUser ? editingUser.lastName : "",
+                password: editingUser ? editingUser.password : "",
+                email: editingUser ? editingUser.email : "",
+                contact: editingUser ? editingUser.contact : "",
+                gender: editingUser ? editingUser.gender : "",
+                profile: editingUser ? editingUser.profile : "",
               }}
               validationSchema={validationSchema}
               onSubmit={(values, { resetForm }) => {
-                const newUser = {
-                  ...values,
-                  id: Date.now().toString(), // Generate a unique ID based on timestamp or use UUID
-                };
-                dispatch(addUser(newUser)); 
-                console.log(store.getState().user);
+                if (editingUser) {
+                  dispatch(updateUser({ id: editingUser.id, updatedData: values }));
+                } else {
+                  const newUser = { ...values, id: Date.now().toString() };
+                  dispatch(addUser(newUser));
+                }
                 setIsModalOpen(false);
                 resetForm();
               }}
@@ -145,7 +142,7 @@ const AdminPage: React.FC = () => {
                       Close
                     </button>
                     <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                      Submit
+                      {editingUser?"update":"submit"}
                     </button>
                   </div>
                 </Form>
@@ -182,7 +179,7 @@ const AdminPage: React.FC = () => {
                 <td>{user.contact}</td>
                 <td>{user.gender}</td>
                 <td>{user.profile}</td>
-                <button className="btn btn-danger">Edit</button>
+                <button onClick={()=>handleEditUser(user)} className="btn btn-danger">Edit</button>
                 <button onClick={() => handleDeleteUser(user.id)} className="btn btn-danger">
                     Delete
                   </button>

@@ -1,5 +1,5 @@
 import { LOGIN_FAILURE } from "./authAction";
-import { LOGIN_SUCCESS } from "./authAction";
+import { LOGIN_SUCCESS,LOGOUT } from "./authAction";
 
 interface AuthState {
   user: string | null;
@@ -17,6 +17,8 @@ const authReducer = (state = initialState, action: any): AuthState => {
       return { ...state, user: action.payload, isAuthenticated: true };
     case LOGIN_FAILURE:
       return { ...state, isAuthenticated: false };
+    case LOGOUT:
+      return {...state,user:null,isAuthenticated:false};
     default:
       return state;
   }
