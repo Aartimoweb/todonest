@@ -21,16 +21,15 @@ const LoginForm = () => {
         const adminUsername = import.meta.env.VITE_ADMIN_USERNAME;
         const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
 
-
+        const registeredUser = users.find(user => user.username === username && user.password === password);
         if (username === adminUsername && password === adminPassword) {
             dispatch(loginSuccess('admin'));
             navigate('/admin');
         }
-         
-        const registeredUser = users.find(user => user.username === username && user.password === password);
-        if (registeredUser) {
+        else if(registeredUser){
             navigate(`/users/${registeredUser.id}`);  
-          } else {
+        }
+        else{
             setErrorMessage("Invalid username or password. Please try again.");
           }
     };
@@ -53,6 +52,7 @@ const LoginForm = () => {
             />
             <br></br><br></br>
             <button onClick={handleLogin}>Login</button>
+            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
         </div>
     );
 };

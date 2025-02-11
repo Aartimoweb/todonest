@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,11 +15,12 @@ const AdminPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const users = useSelector((state: RootState) => state.user.users);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
  
   const validationSchema = Yup.object({
     username: Yup.string().required("Username is required"),
     lastName: Yup.string().required("Last name is required"),
-    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    password: Yup.string().min(3, "Password must be at least 6 characters").required("Password is required"),
     email: Yup.string().email("Invalid email format").required("Email is required"),
     contact: Yup.string()
       .matches(/^[0-9]+$/, "Contact must be a number")
@@ -44,6 +45,13 @@ const AdminPage: React.FC = () => {
     navigate('/')
   }
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/"); 
+    }
+  }, [isAuthenticated, navigate]);
+
+         
   return (
     <>
        <button onClick={handleLogout} className="btn btn-primary">Logout</button>

@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import Profile from "./Image";
 
 const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +19,9 @@ const UserDetailPage: React.FC = () => {
       <p>Email: {user.email}</p>
       <p>Contact: {user.contact}</p>
       <p>Gender: {user.gender}</p>
-      <p>Profile Image: {user.profile}</p>
+      <p>Profile:
+      <Profile username={user.username} lastname={user.lastName} imageUrl={user.profile} />
+      </p>
     </div>
   );
 };
