@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginSuccess, loginFailure } from './store/authAction';
+import { useDispatch,useSelector } from 'react-redux';
+import { loginSuccess,loginFailure } from '../store/authAction';
 import { useNavigate } from 'react-router-dom';
+import { RootState } from "../store/store";
+import UserDetail from './Users';
+
 
 
 const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState("");
+    const users = useSelector((state: RootState) => state.user.users);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -20,10 +25,14 @@ const LoginForm = () => {
         if (username === adminUsername && password === adminPassword) {
             dispatch(loginSuccess('admin'));
             navigate('/admin');
-        } else {
-            dispatch(loginFailure());
-            alert('Invalid user  or password');
         }
+         
+        const registeredUser = users.find(user => user.username === username && user.password === password);
+        if (registeredUser) {
+            navigate(`/users/${registeredUser.id}`);  
+          } else {
+            setErrorMessage("Invalid username or password. Please try again.");
+          }
     };
 
     return (

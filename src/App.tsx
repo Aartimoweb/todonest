@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginForm from './LoginForm';
-import AdminPage from './AdminPage';
+import LoginForm from './page/LoginForm';
+import AdminPage from './page/AdminPage';
 import { persistor, store } from './store/store';
+import UserDetail from './page/Users';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Routes>
           <Route path="/admin" element={<AdminPage />} />
             <Route path="/" element={<LoginForm />} />
+            <Route path="/users/:id" element={<UserDetail/>} /> 
            
           </Routes>
         </Router>

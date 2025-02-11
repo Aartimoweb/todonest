@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser,deleteUser,updateUser } from "./store/userslice";
-import { LOGOUT } from "./store/authAction";
+import { addUser,deleteUser,updateUser } from "../store/userslice";
+import { LOGOUT } from "../store/authAction";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "./store/store";
-import '../src/Admin.css';
+import Profile from "./Image";
+import { RootState } from "../store/store";
+import '../Admin.css'
 
 const AdminPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,7 +51,6 @@ const AdminPage: React.FC = () => {
       <div>Welcome to the Admin Page</div>
       <br />
 
-      {/* Add User Button */}
       <button className="btn btn-primary"  onClick={() => {
        setEditingUser(null); 
        setIsModalOpen(true)}
@@ -58,7 +58,6 @@ const AdminPage: React.FC = () => {
         Add User
       </button>
 
-      {/* User Form Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -134,9 +133,6 @@ const AdminPage: React.FC = () => {
                     <ErrorMessage name="profile" component="div" className="error" />
                   </div>
 
-               
-
-
                   <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>
                       Close
@@ -178,7 +174,9 @@ const AdminPage: React.FC = () => {
                 <td>{user.email}</td>
                 <td>{user.contact}</td>
                 <td>{user.gender}</td>
-                <td>{user.profile}</td>
+                <td>
+                  <Profile imageUrl={user.profile} username={user.username} lastname={user.lastName}/>
+                </td>
                 <button onClick={()=>handleEditUser(user)} className="btn btn-danger">Edit</button>
                 <button onClick={() => handleDeleteUser(user.id)} className="btn btn-danger">
                     Delete
